@@ -1,8 +1,9 @@
 package org.jusecase.inject;
 
-import net.jodah.typetools.TypeResolver;
 import org.junit.After;
 import org.junit.Before;
+
+import java.lang.reflect.ParameterizedType;
 
 public class ComponentTest<Component> {
     private Component component;
@@ -17,7 +18,8 @@ public class ComponentTest<Component> {
     @SuppressWarnings("unchecked")
     protected Component createComponent() {
         try {
-            return (Component) TypeResolver.resolveRawArguments(ComponentTest.class, getClass())[0].newInstance();
+            Class<Component> componentClass = (Class<Component>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+            return componentClass.newInstance();
         } catch (Exception e) {
             throw new RuntimeException("Failed to create instance", e);
         }
@@ -25,7 +27,7 @@ public class ComponentTest<Component> {
 
     @Before
     public void initInjector() {
-        // TODO bring injector to test aka "thread local" mode
+        Injector.enableUnitTestMode();
     }
 
     @After

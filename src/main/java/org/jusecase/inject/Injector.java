@@ -6,12 +6,16 @@ import java.util.*;
 
 public class Injector {
     private static final Injector instance = new Injector();
+    private static boolean unitTestMode;
 
     private Map<Class<?>, Object> implementations = new HashMap<>();
     private Map<Class<?>, Map<String, Object>> implementationsByName = new HashMap<>();
     private Map<Class<?>, List<Field>> injectableFields = new HashMap<>();
 
     public static Injector getInstance() {
+        if (unitTestMode) {
+            return UnitTestInstanceHolder.unitTestInstance.get();
+        }
         return instance;
     }
 
@@ -77,5 +81,13 @@ public class Injector {
 
     public void reset() {
         implementations.clear();
+    }
+
+    public static void enableUnitTestMode() {
+        unitTestMode = true;
+    }
+
+    private static class UnitTestInstanceHolder {
+        static final ThreadLocal<Injector> unitTestInstance = ThreadLocal.withInitial(Injector::new);
     }
 }
