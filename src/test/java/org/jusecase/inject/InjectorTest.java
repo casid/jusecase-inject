@@ -1,10 +1,7 @@
 package org.jusecase.inject;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.jusecase.inject.classes.*;
-
-import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -12,7 +9,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 public class InjectorTest extends ComponentTest<Injector> {
 
     @Test
-    public void sameTypeTwice() {
+    public void fieldNames() {
         givenDependency("host", "localhost");
         givenDependency("user", "root");
 
@@ -58,7 +55,17 @@ public class InjectorTest extends ComponentTest<Injector> {
         Throwable throwable = catchThrowable(() -> new Formatter("foo", "bar"));
         assertThat(throwable)
                 .isInstanceOf(InjectorException.class)
-                .hasMessage("Failed to inject org.jusecase.inject.classes.TestService into org.jusecase.inject.classes.Formatter");
+                .hasMessage("No implementation found. Failed to inject org.jusecase.inject.classes.TestService service in org.jusecase.inject.classes.Formatter");
+    }
+
+    @Test
+    public void bean_finalField() {
+        givenDependency("some string");
+        Throwable throwable = catchThrowable(BeanWithFinalField::new);
+
+        assertThat(throwable)
+                .isInstanceOf(InjectorException.class)
+                .hasMessage("@Inject field must not be final. Failed to inject java.lang.String something in org.jusecase.inject.classes.BeanWithFinalField");
     }
 
     @Test

@@ -2,6 +2,7 @@ package org.jusecase.inject;
 
 import javax.inject.Inject;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public class Injector {
@@ -36,16 +37,24 @@ public class Injector {
         for(Field field : getInjectableFields(declaringType)) {
             Object implementation = resolveImplementation(field);
             if (implementation == null) {
-                throw new InjectorException("Failed to inject " + field.getType().getName() + " into " + declaringType.getName());
+                throw new InjectorException(createInjectErrorMessage("No implementation found.", declaringType, field));
+            }
+
+            if (Modifier.isFinal(field.getModifiers())) {
+                throw new InjectorException(createInjectErrorMessage("@Inject field must not be final.", declaringType, field));
             }
 
             try {
                 field.setAccessible(true);
                 field.set(instance, implementation);
             } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
+                throw new InjectorException(createInjectErrorMessage("Failed to access field.", declaringType, field), e);
             }
         }
+    }
+
+    private String createInjectErrorMessage(String reason, Class type, Field field) {
+        return reason + " Failed to inject " + field.getType().getName() + " " + field.getName() + " in " + type.getName();
     }
 
     private Object resolveImplementation(Field field) {
