@@ -9,17 +9,12 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class InjectorTest {
-
-    @Before
-    public void setUp() {
-        Injector.getInstance().reset();
-    }
+public class InjectorTest extends ComponentTest<Injector> {
 
     @Test
     public void sameTypeTwice() {
-        Injector.getInstance().add("host", "localhost");
-        Injector.getInstance().add("user", "root");
+        givenDependency("host", "localhost");
+        givenDependency("user", "root");
 
         Datasource datasource = new Datasource();
 
@@ -30,10 +25,10 @@ public class InjectorTest {
     @Test
     public void service() {
         TestDriver testDriver = new TestDriver();
-        Injector.getInstance().add(testDriver);
+        givenDependency(testDriver);
 
         TestGateway testGateway = new TestGateway();
-        Injector.getInstance().add(testGateway);
+        givenDependency(testGateway);
 
         TestService testService = new TestService();
 
@@ -45,10 +40,10 @@ public class InjectorTest {
     @Test
     public void serviceSubclass() {
         TestDriver testDriver = new TestDriver();
-        Injector.getInstance().add(testDriver);
+        givenDependency(testDriver);
 
         TestGateway testGateway = new TestGateway();
-        Injector.getInstance().add(testGateway);
+        givenDependency(testGateway);
 
         TestServiceSubclass testService = new TestServiceSubclass();
 
@@ -69,13 +64,13 @@ public class InjectorTest {
     @Test
     public void bean() {
         TestDriver testDriver = new TestDriver();
-        Injector.getInstance().add(testDriver);
+        givenDependency(testDriver);
 
         TestGateway testGateway = new TestGateway();
-        Injector.getInstance().add(testGateway);
+        givenDependency(testGateway);
 
         TestService testService = new TestService();
-        Injector.getInstance().add(testService);
+        givenDependency(testService);
 
         Formatter formatter = new Formatter("foo", "bar");
         String result = formatter.getResult();
