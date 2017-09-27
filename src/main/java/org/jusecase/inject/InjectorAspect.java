@@ -14,7 +14,7 @@ public class InjectorAspect {
     public void typeAnnotatedWithComponent() {
     }
 
-    @Pointcut("execution(*.new(..))")
+    @Pointcut("execution(public new(..))")
     public void constructor() {
     }
 
