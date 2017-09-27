@@ -1,12 +1,12 @@
 package org.jusecase.inject;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jusecase.inject.classes.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class InjectorTest extends ComponentTest<Injector> {
+public class InjectorTest implements ComponentTest {
 
     @Test
     public void fieldNames() {
