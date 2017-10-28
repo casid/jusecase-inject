@@ -4,7 +4,6 @@ package org.jusecase.inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import javax.inject.Inject;
 import java.lang.reflect.Field;
 
 public interface ComponentTest {
@@ -24,11 +23,17 @@ public interface ComponentTest {
 
     default void injectFieldsDeclaredInTestClass(Class<?> testClass) {
         for (Field field : testClass.getDeclaredFields()) {
-            if (field.getAnnotation(Inject.class) != null) {
+            Trainer trainer = field.getAnnotation(Trainer.class);
+            if (trainer != null) {
                 try {
-                    Object instance = field.getType().newInstance();
+                    Object instance = field.getType().getConstructor().newInstance();
+                    field.setAccessible(true);
                     field.set(this, instance);
-                    givenDependency(instance);
+                    if (trainer.named().isEmpty()) {
+                        givenDependency(instance);
+                    } else {
+                        givenDependency(trainer.named(), instance);
+                    }
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to inject field " + field.getName() + " in test class " + testClass.getSimpleName(), e);
                 }

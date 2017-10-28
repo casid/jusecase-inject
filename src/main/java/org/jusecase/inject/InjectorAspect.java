@@ -20,8 +20,10 @@ public class InjectorAspect {
 
     @Before("typeAnnotatedWithComponent() && constructor()")
     public void inject(JoinPoint joinPoint) {
-        ConstructorSignature signature = (ConstructorSignature) joinPoint.getStaticPart().getSignature();
-        Injector.getInstance().inject(joinPoint.getThis(), signature.getDeclaringType());
+        if (joinPoint.getThis().getClass().isAnnotationPresent(Component.class)) {
+            ConstructorSignature signature = (ConstructorSignature) joinPoint.getStaticPart().getSignature();
+            Injector.getInstance().inject(joinPoint.getThis(), signature.getDeclaringType());
+        }
     }
 
 }
