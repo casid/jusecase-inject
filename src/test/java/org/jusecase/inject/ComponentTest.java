@@ -46,6 +46,9 @@ public interface ComponentTest {
         Injector.getInstance().reset();
     }
 
+    default void givenDependency(Class<?> clazz) {
+        Injector.getInstance().add(clazz);
+    }
     default void givenDependency(Object dependency) {
         Injector.getInstance().add(dependency);
     }

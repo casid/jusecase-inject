@@ -138,6 +138,28 @@ public class InjectorTest implements ComponentTest {
     }
 
     @Test
+    void addBeanWithName() {
+        givenDependency(new TestDriverDb1());
+        givenDependency(new TestDriverDb2());
+        BeanWithNamedDependency bean = new BeanWithNamedDependency();
+
+        assertThat(bean.driver1).isNotSameAs(bean.driver2);
+    }
+
+    @Test
+    void addBeanWithNameAsClass() {
+        givenDependency(TestDriverDb1.class);
+        givenDependency(TestDriverDb2.class);
+
+        BeanWithNamedDependency bean = new BeanWithNamedDependency();
+
+        assertThat(bean.driver1).isNotNull();
+        assertThat(bean.driver2).isNotNull();
+        assertThat(bean.driver1).isNotSameAs(bean.driver2);
+    }
+
+
+    @Test
     void logger() {
         Injector.getInstance().addProvider(new LoggerProvider());
         LoggerUser1 loggerUser1 = new LoggerUser1();
