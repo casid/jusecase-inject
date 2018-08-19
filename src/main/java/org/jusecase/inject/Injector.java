@@ -5,6 +5,8 @@ import net.jodah.typetools.TypeResolver;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
+import javax.naming.Name;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -98,7 +100,16 @@ public class Injector {
     }
 
     private void add(Class<?> clazz, Object implementationOrProvider) {
-        add(clazz, implementationOrProvider, implementations::put);
+        if (clazz.isAnnotationPresent((Named.class))) {
+            Named named = clazz.getAnnotation(Named.class);
+            if (named.value().isEmpty()) {
+                add(clazz, implementationOrProvider, implementations::put);
+            } else {
+                add(named.value(), clazz);
+            }
+        } else {
+            add(clazz, implementationOrProvider, implementations::put);
+        }
     }
 
     private void add(String name, Class<?> clazz, Object implementationOrProvider) {
