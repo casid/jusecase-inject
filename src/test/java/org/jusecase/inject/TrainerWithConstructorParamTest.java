@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TrainerWithConstructorParamTest implements ComponentTest {
-    @Trainer Gateway trainer = new Gateway("hello");
+    @Trainer private Gateway trainer = new Gateway("hello");
 
     @Test
     void injection() {
