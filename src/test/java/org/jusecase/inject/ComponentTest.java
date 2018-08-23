@@ -26,9 +26,13 @@ public interface ComponentTest {
             Trainer trainer = field.getAnnotation(Trainer.class);
             if (trainer != null) {
                 try {
-                    Object instance = field.getType().getConstructor().newInstance();
-                    field.setAccessible(true);
-                    field.set(this, instance);
+                    Object instance = field.get(this);
+                    if (instance == null) {
+                        instance = field.getType().getConstructor().newInstance();
+                        field.setAccessible(true);
+                        field.set(this, instance);
+                    }
+
                     if (trainer.named().isEmpty()) {
                         givenDependency(instance);
                     } else {
