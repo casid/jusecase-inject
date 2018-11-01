@@ -1,12 +1,20 @@
 package org.jusecase.inject;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jusecase.inject.classes.*;
+
+import javax.inject.Inject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class InjectorTest implements ComponentTest {
+
+    @BeforeEach
+    void setUp() {
+        Injector.disableUnitTestMode();
+    }
 
     @Test
     void named() {

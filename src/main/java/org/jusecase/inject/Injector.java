@@ -139,7 +139,11 @@ public class Injector {
         for(Field field : getInjectableFields(declaringType)) {
             Object implementation = resolveImplementation(field, declaringType);
             if (implementation == null) {
-                throw new InjectorException(createInjectErrorMessage("No implementation found.", declaringType, field));
+                if (unitTestMode) {
+                    continue;
+                } else {
+                    throw new InjectorException(createInjectErrorMessage("No implementation found.", declaringType, field));
+                }
             }
 
             if (Modifier.isFinal(field.getModifiers())) {
@@ -224,6 +228,10 @@ public class Injector {
 
     public static void enableUnitTestMode() {
         unitTestMode = true;
+    }
+
+    public static void disableUnitTestMode() {
+        unitTestMode = false;
     }
 
     private static class UnitTestInstanceHolder {
