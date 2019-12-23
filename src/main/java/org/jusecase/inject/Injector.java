@@ -21,6 +21,7 @@ public class Injector {
     private Map<Class<?>, Object> implementations = new HashMap<>();
     private Map<Class<?>, Map<String, Object>> implementationsByName = new HashMap<>();
     private Map<Class<?>, List<Field>> injectableFields = new HashMap<>();
+    private boolean allowMissingDependencies;
 
     public static Injector getInstance() {
         if (unitTestMode) {
@@ -139,6 +140,9 @@ public class Injector {
         for(Field field : getInjectableFields(declaringType)) {
             Object implementation = resolveImplementation(field, declaringType);
             if (implementation == null) {
+                if (allowMissingDependencies) {
+                    continue;
+                }
                 throw new InjectorException(createInjectErrorMessage("No implementation found.", declaringType, field));
             }
 
@@ -220,6 +224,10 @@ public class Injector {
     public void reset() {
         implementations.clear();
         implementationsByName.clear();
+    }
+
+    public void setAllowMissingDependencies(boolean allowMissingDependencies) {
+        this.allowMissingDependencies = allowMissingDependencies;
     }
 
     public static void enableUnitTestMode() {
