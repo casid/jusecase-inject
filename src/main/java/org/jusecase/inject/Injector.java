@@ -1,12 +1,8 @@
 package org.jusecase.inject;
 
-import net.jodah.typetools.TypeResolver;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.naming.Name;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -76,26 +72,26 @@ public class Injector {
         }
 
         try {
-            return clazz.newInstance();
+            return clazz.getConstructor().newInstance();
         } catch (Throwable e) {
             throw new InjectorException("Failed to create instance of " + clazz , e);
         }
     }
 
     public <T> void addProvider(Provider<T> provider) {
-        Class<?> providedClass = TypeResolver.resolveRawArguments(Provider.class, provider.getClass())[0];
+        Class<?> providedClass = GenericTypeResolver.resolve(Provider.class, provider.getClass(), 0);
         add(providedClass, provider);
         add(provider.getClass(), provider);
     }
 
     public <T> void addProviderForSingleInstance(Provider<T> provider) {
-        Class<?> providedClass = TypeResolver.resolveRawArguments(Provider.class, provider.getClass())[0];
+        Class<?> providedClass = GenericTypeResolver.resolve(Provider.class, provider.getClass(), 0);
         add(providedClass, provider.get());
         add(provider.getClass(), provider);
     }
 
     public <T> void addProvider(PerClassProvider<T> provider) {
-        Class<?> providedClass = TypeResolver.resolveRawArguments(PerClassProvider.class, provider.getClass())[0];
+        Class<?> providedClass = GenericTypeResolver.resolve(PerClassProvider.class, provider.getClass(), 0);
         add(providedClass, provider);
         add(provider.getClass(), provider);
     }
