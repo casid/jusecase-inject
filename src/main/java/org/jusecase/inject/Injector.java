@@ -132,7 +132,7 @@ public class Injector {
         return resolveImplementation(clazz, null);
     }
 
-    public void inject(Object instance, Class declaringType) {
+    public void inject(Object instance, Class<?> declaringType) {
         for(Field field : getInjectableFields(declaringType)) {
             Object implementation = resolveImplementation(field, declaringType);
             if (implementation == null) {
@@ -155,11 +155,11 @@ public class Injector {
         }
     }
 
-    private String createInjectErrorMessage(String reason, Class type, Field field) {
+    private String createInjectErrorMessage(String reason, Class<?> type, Field field) {
         return reason + " Failed to inject " + field.getType().getName() + " " + field.getName() + " in " + type.getName();
     }
 
-    private String createInjectErrorMessage(String reason, Class type, Parameter parameter) {
+    private String createInjectErrorMessage(String reason, Class<?> type, Parameter parameter) {
         return reason + " Failed to inject " + parameter.getType().getName() + " " + parameter.getName() + " in " + type.getName();
     }
 
@@ -206,13 +206,12 @@ public class Injector {
         return fields;
     }
 
-    @SuppressWarnings("unchecked")
     private Object resolveImplementation(Object implementation, Class<?> requestedClass, Class<?> toBeInjectedIn) {
         if (toBeInjectedIn != null && implementation instanceof PerClassProvider && !PerClassProvider.class.isAssignableFrom(requestedClass)) {
-            return ((PerClassProvider)implementation).get(toBeInjectedIn);
+            return ((PerClassProvider<?>)implementation).get(toBeInjectedIn);
         }
         if (implementation instanceof Provider && !Provider.class.isAssignableFrom(requestedClass)) {
-            return ((Provider)implementation).get();
+            return ((Provider<?>)implementation).get();
         }
         return implementation;
     }

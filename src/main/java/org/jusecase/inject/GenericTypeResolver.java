@@ -24,6 +24,6 @@ public class GenericTypeResolver {
             return resolve(type, (Class<?>)genericSuperclass, index);
         }
 
-        return null;
+        throw new InjectorException("Failed to resolve generic type " + type + " from class " + clazz + " at index " + index);
     }
 }

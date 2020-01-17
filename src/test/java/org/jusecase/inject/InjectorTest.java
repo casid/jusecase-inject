@@ -100,6 +100,16 @@ public class InjectorTest implements ComponentTest {
     }
 
     @Test
+    void provider_singleInstance_subclass() {
+        givenDependency("host", "localhost");
+        givenDependency("user", "root");
+        Injector.getInstance().addProviderForSingleInstance(DataSourceProviderSubclass.class);
+        DataSourceUser dataSourceUser = new DataSourceUser();
+
+        assertThat(dataSourceUser.dataSource).isNotNull();
+    }
+
+    @Test
     void providerLookup() {
         DataSourceProvider provider = new DataSourceProvider();
         Injector.getInstance().addProvider(provider);
