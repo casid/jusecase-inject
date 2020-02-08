@@ -54,12 +54,12 @@ JUsecase Inject is available on maven central repository:
 <dependency>
     <groupId>org.jusecase</groupId>
     <artifactId>inject</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
 </dependency>
 <dependency>
     <groupId>org.jusecase</groupId>
     <artifactId>inject</artifactId>
-    <version>0.3.0</version>
+    <version>0.3.1</version>
     <type>test-jar</type>
     <scope>test</scope>
 </dependency>
