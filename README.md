@@ -1,4 +1,4 @@
-# JUsecase Inject
+# Inject
 
 [![Build Status](https://travis-ci.org/casid/jusecase-inject.svg?branch=master)](https://travis-ci.org/casid/jusecase)
 [![Coverage Status](https://coveralls.io/repos/github/casid/jusecase-inject/badge.svg?branch=master)](https://coveralls.io/github/casid/jusecase-inject?branch=master)
