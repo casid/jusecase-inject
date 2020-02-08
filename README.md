@@ -20,6 +20,7 @@ Here is why you may want to check it out:
 - First class support for unit testing
 - Prepared for parallel unit test execution
 - No static, hard to test loggers
+- Small footprint, no dependencies except AspectJ (the JAR is about 14KB)
 
 But see for yourself. Here's a small component:
 ```java
