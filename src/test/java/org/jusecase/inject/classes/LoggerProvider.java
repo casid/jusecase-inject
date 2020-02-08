@@ -1,6 +1,5 @@
 package org.jusecase.inject.classes;
 
-import org.jusecase.inject.Component;
 import org.jusecase.inject.PerClassProvider;
 
 public class LoggerProvider implements PerClassProvider<Logger> {

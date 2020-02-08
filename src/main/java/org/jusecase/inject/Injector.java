@@ -167,20 +167,37 @@ public class Injector {
     private Object resolveImplementation(Field field, Class<?> toBeInjectedIn) {
         if (field.isAnnotationPresent(Named.class)) {
             String name = field.getAnnotation(Named.class).value();
-            Map<String, Object> implementationByName = implementationsByName.get(field.getType());
-            if (implementationByName == null) {
-                throw new InjectorException(createInjectErrorMessage("No dependency named " + name + ".", toBeInjectedIn, field));
-            }
+            return resolveImplementationByName(field, toBeInjectedIn, name, true);
+        }
 
-            Object implementation = implementationByName.get(name);
-            if (implementation == null) {
-                TreeSet<String> available = new TreeSet<>(implementationByName.keySet());
-                throw new InjectorException(createInjectErrorMessage("No dependency named " + name + ", got " + available + ".", toBeInjectedIn, field));
-            }
+        Object implementation = resolveImplementation(field.getType(), toBeInjectedIn);
+        if (implementation != null) {
             return implementation;
         }
 
-        return resolveImplementation(field.getType(), toBeInjectedIn);
+        return resolveImplementationByName(field, toBeInjectedIn, field.getName(), false);
+    }
+
+    private Object resolveImplementationByName(Field field, Class<?> toBeInjectedIn, String name, boolean failIfMissing) {
+        Map<String, Object> implementationByName = implementationsByName.get(field.getType());
+        if (implementationByName == null) {
+            if (failIfMissing) {
+                throw new InjectorException(createInjectErrorMessage("No dependency named " + name + ".", toBeInjectedIn, field));
+            } else {
+                return null;
+            }
+        }
+
+        Object implementation = implementationByName.get(name);
+        if (implementation == null) {
+            if (failIfMissing) {
+                TreeSet<String> available = new TreeSet<>(implementationByName.keySet());
+                throw new InjectorException(createInjectErrorMessage("No dependency named " + name + ", got " + available + ".", toBeInjectedIn, field));
+            } else {
+                return null;
+            }
+        }
+        return implementation;
     }
 
     private List<Field> getInjectableFields(Class<?> type) {
