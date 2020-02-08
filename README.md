@@ -10,7 +10,7 @@ A fast and lightweight dependency injection framework for Java, with focus on si
 ## Motivation
 I've written this small lib to have faster TDD cycles in my personal <a href="https://mazebert.com/">Java backend project</a>. I'm running it in production for over two years now, without looking back at Spring/Guice/Dagger or doing it all by hand.
 
-First of, you should NOT use this lib, if you:
+First off, you should **NOT** use this lib, if you:
 - Can't or don't want to use AspectJ
 - Have more than one application context in a process (enterprise java)
 - Want to have circular dependencies (well, this might actually be a benefit)
