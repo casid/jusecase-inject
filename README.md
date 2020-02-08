@@ -23,6 +23,9 @@ Here is why you may want to check it out:
 
 But see for yourself. Here's a small component:
 ```java
+import org.jusecase.inject.Component;
+import javax.inject.Inject;
+
 @Component
 public class CoffeeMachine {
   @Inject
@@ -101,6 +104,9 @@ And AspectJ (for Java 11 we unfortunately can't use the official plugin):
 
 To see if everything works as expected, we can create a quick hello world class:
 ```java
+import org.jusecase.inject.Component;
+import javax.inject.Inject;
+
 @Component
 public class HelloWorld {
     @Inject
@@ -114,8 +120,10 @@ public class HelloWorld {
 }
 ```
 
-Let's create a unit test for our hello world class:
+Let's create a unit test to see if everything is working:
 ```java
+import org.junit.jupiter.api.Test;
+
 class HelloWorldTest {
     @Test
     void test() {
@@ -124,10 +132,14 @@ class HelloWorldTest {
 }
 ```
 
-Run the test. It fails with this error message: org.jusecase.inject.InjectorException: No implementation found. Failed to inject java.lang.String hello in org.jusecase.inject.classes.HelloWorld
+Run the test. It fails with this error message: 
+`org.jusecase.inject.InjectorException: No implementation found. Failed to inject java.lang.String hello in org.jusecase.inject.classes.HelloWorld`
 
-Well, that makes sense. We haven't told Inject, what dependencies to use. There is a ComponentTest interface that helps with writing unit tests. By implementing it, we get some BDD style default methods, to setup test dependencies:
+Well, that makes sense. We haven't told Inject, what dependencies to use. There is a `ComponentTest` interface that helps with writing unit tests. By implementing it, we get some BDD style default methods, to setup test dependencies:
 ```java
+import org.junit.jupiter.api.Test;
+import org.jusecase.inject.ComponentTest;
+
 class HelloWorldTest implements ComponentTest {
     @Test
     void test() {
@@ -138,10 +150,14 @@ class HelloWorldTest implements ComponentTest {
 }
 ```
 
-You should now see this output: "Hello World"
+You should now see this output: `"Hello World"`
 
-This works, because the fields are named like the names of our dependencies. If you do not want to rely on field names you can use the @Named annotation:
+This works, because the fields are named like the names of our dependencies. If you do not want to rely on field names you can use the `@Named` annotation:
 ```java
+import org.jusecase.inject.Component;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 @Component
 public class HelloWorld {
     @Inject
