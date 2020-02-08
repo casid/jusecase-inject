@@ -1,4 +1,4 @@
-package org.jusecase.inject.classes;
+package org.jusecase.inject.classes.example1;
 
 import org.jusecase.inject.Component;
 

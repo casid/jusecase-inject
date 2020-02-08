@@ -1,4 +1,4 @@
-package org.jusecase.inject.classes;
+package org.jusecase.inject.classes.example1;
 
 import org.junit.jupiter.api.Test;
 import org.jusecase.inject.ComponentTest;
