@@ -333,7 +333,13 @@ public class LoggerProvider implements PerClassProvider<Logger> {
 }
 ```
 
-In your components, you can now simply inject a logger.
+You need to register the provider like this, at the place you configure your production dependencies:
+
+```java
+injector.addProvider(new LoggerProvider());
+```
+
+In all your components, you can now simply inject a logger that will generate logs for this class:
 
 ```java
 @Component
