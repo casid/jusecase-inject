@@ -17,7 +17,7 @@ First of, you should NOT use this lib, if you:
 
 Here is why you may want to check it out:
 - Create components naturally with `new Foo()`, and injection happens automatically
-- First class, built in support for unit testing
+- First class support for unit testing
 - Prepared for parallel unit test execution
 - No static, hard to test loggers
 
