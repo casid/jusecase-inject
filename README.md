@@ -103,7 +103,10 @@ And AspectJ (for Java 11 we unfortunately can't use the official plugin):
 </plugin>
 ```
 
-To see if everything works as expected, we can create a quick hello world class:
+To see if everything works as expected, we can create a quick hello world class.
+
+> You find the code for this example in the test source package `org.jusecase.inject.classes.example1`
+
 ```java
 import org.jusecase.inject.Component;
 import javax.inject.Inject;
@@ -170,6 +173,191 @@ public class HelloWorld {
 
     public HelloWorld() {
         System.out.println(_hello + " " + _world);
+    }
+}
+```
+
+## Trainers aka Custom Mocks
+
+Let's have a look at a more interesting case than hello world. We want to write a small registration service.
+
+> You find the code for this example in the test source package `org.jusecase.inject.classes.example2`
+
+```java
+@Component
+public class RegisterNewsletter {
+    @Inject
+    private NewsletterGateway newsletterGateway;
+    @Inject
+    private EmailValidator emailValidator;
+
+    public void register(String email) {
+        emailValidator.validate(email);
+        try {
+            newsletterGateway.addRecipient(email);
+        } catch (DuplicateKeyException e) {
+            throw new BadRequest("This email address is already registered.");
+        }
+    }
+}
+```
+
+We also have a entity gateway for newsletter recipients (only emails for the sake of this example).
+```java
+public interface NewsletterGateway {
+    void addRecipient(String email) throws DuplicateKeyException;
+    boolean isRecipient(String email);
+}
+```
+
+It's an interface, because in our unit test we don't want to use the real thing. Let's write a custom mock for it.
+```java
+public class NewsletterGatewayTrainer implements NewsletterGateway {
+    private final Set<String> emails = new HashSet<>();
+    
+    @Override
+    public void addRecipient(String email) throws DuplicateKeyException {
+        if (isRecipient(email)) {
+            throw new DuplicateKeyException("E-Mail already registered.");
+        }
+        emails.add(email);
+    }
+    
+    @Override
+    public boolean isRecipient(String email) {
+        return emails.contains(email);
+    }
+}
+```
+
+Let's have a look how we can test this class. We really would like to tell Inject that we want to use the `NewsletterGatewayTrainer` as implementation for `NewsletterGateway`. We can do this by hand, like we did it in the Hello World example:
+
+```java
+class RegisterNewsletterTest implements ComponentTest {
+
+    RegisterNewsletter registerNewsletter;
+
+    @BeforeEach
+    void setUp() {
+        givenDependency(new NewsletterGatewayTrainer());
+        registerNewsletter = new RegisterNewsletter();
+    }
+}
+```
+
+Usually you want to do stuff with your custom mocks in your unit tests. So there is a shorthand, to inject custom mocks in unit tests, by using the `@Trainer` annotation:
+
+```java
+class RegisterNewsletterTest implements ComponentTest {
+
+    @Trainer // ComponentTest will instantiate this field and provide it as a dependency.
+    NewsletterGatewayTrainer newsletterGatewayTrainer;
+
+    RegisterNewsletter registerNewsletter;
+
+    @BeforeEach
+    void setUp() {
+        registerNewsletter = new RegisterNewsletter();
+    }
+}
+```
+
+There is another dependency in this class, the `EmailValidator`. This is something we don't want to mock, thus we can simply provide it to the test by saying `givenDependency(new EmailValidator());`. The final test then may look something like this:
+
+```java
+class RegisterNewsletterTest implements ComponentTest {
+
+    @Trainer
+    NewsletterGatewayTrainer newsletterGatewayTrainer;
+
+    RegisterNewsletter registerNewsletter;
+
+    @BeforeEach
+    void setUp() {
+        givenDependency(new EmailValidator());
+        registerNewsletter = new RegisterNewsletter();
+    }
+
+    @Test
+    void success() {
+        whenEmailIsRegistered("test@example.com");
+        assertThat(newsletterGatewayTrainer.isRecipient("test@example.com")).isTrue();
+    }
+
+    @Test
+    void alreadyRegistered() {
+        newsletterGatewayTrainer.addRecipient("test@example.com");
+        Throwable throwable = catchThrowable(() -> whenEmailIsRegistered("test@example.com"));
+        assertThat(throwable).isInstanceOf(BadRequest.class).hasMessage("This email address is already registered.");
+    }
+
+    @Test
+    void emptyMail() {
+        Throwable throwable = catchThrowable(() -> whenEmailIsRegistered(""));
+        assertThat(throwable).isInstanceOf(BadRequest.class).hasMessage("Please enter an email address");
+    }
+
+    @Test
+    void nullEmail() {
+        Throwable throwable = catchThrowable(() -> whenEmailIsRegistered(null));
+        assertThat(throwable).isInstanceOf(BadRequest.class).hasMessage("Please enter an email address");
+    }
+
+    @Test
+    void invalidEmail() {
+        Throwable throwable = catchThrowable(() -> whenEmailIsRegistered("email"));
+        assertThat(throwable).isInstanceOf(BadRequest.class).hasMessage("email is not a valid email address");
+    }
+
+    private void whenEmailIsRegistered(String email) {
+        registerNewsletter.register(email);
+    }
+}
+```
+
+## Nicer logging
+
+In order to obtain a logger one usually does something like this:
+```java
+private static final Logger LOGGER = Logger.getLogger(MyService.class.getName());
+```
+
+With Inject, you can register per class providers. They will provide a new instance for every class they are injected into. This is exactly what we need to inject loggers.
+
+```java
+public class LoggerProvider implements PerClassProvider<Logger> {
+    @Override
+    public Logger get(Class<?> classToInject) {
+        return Logger.getLogger(classToInject.getName());
+    }
+}
+```
+
+In your components, you can now simply inject a logger.
+
+```java
+@Component
+public class MyService {
+    @Inject
+    private Logger logger;
+    
+    public MyService() {
+        logger.info("This service got created.");
+    }
+}
+```
+
+For your tests you can now write a `LoggerTrainer`, that does not log at all. This has the benefit, that your CI build logs look very clean and are not cluttered with exceptions. And finally, you can use it to verify that a certain important message was logged. For instance, your test could look like this:
+
+```java
+public class MyServiceTest {
+    @Trainer
+    LoggerTrainer loggerTrainer;
+    
+    @Test
+    void logging() {
+        new MyService();
+        loggerTrainer.thenInfoWasLogged("This service got created.");
     }
 }
 ```
