@@ -12,7 +12,7 @@ I've written this small lib to have faster TDD cycles in my personal <a href="ht
 
 First of, you should NOT use this lib, if you:
 - Can't or don't want to use AspectJ
-- Have more than one application context
+- Have more than one application context in a process (enterprise java)
 - Want to have circular dependencies (well, this might actually be a benefit)
 
 Here is why you may want to check it out:
