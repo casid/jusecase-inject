@@ -105,7 +105,7 @@ And AspectJ (for Java 11 we unfortunately can't use the official plugin):
 
 To see if everything works as expected, we can create a quick hello world class.
 
-> You find the code for this example in the test source package `org.jusecase.inject.classes.example1`
+> You find the code for this example in the test source package [org.jusecase.inject.classes.example1](src/test/java/org/jusecase/inject/classes/example1)
 
 ```java
 import org.jusecase.inject.Component;
@@ -181,7 +181,7 @@ public class HelloWorld {
 
 Let's have a look at a more interesting case than hello world. We want to write a small registration service.
 
-> You find the code for this example in the test source package `org.jusecase.inject.classes.example2`
+> You find the code for this example in the test source package [org.jusecase.inject.classes.example2](src/test/java/org/jusecase/inject/classes/example2)
 
 ```java
 @Component
