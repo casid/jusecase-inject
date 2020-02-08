@@ -29,10 +29,10 @@ import javax.inject.Inject;
 
 @Component
 public class CoffeeMachine {
-  @Inject
-  private BeansRepository beansRepository;
-  @Inject
-  private WaterRepository waterRepository;
+    @Inject
+    private BeansRepository beansRepository;
+    @Inject
+    private WaterRepository waterRepository;
 }
 ```
 At some place at startup, we init the dependencies:
