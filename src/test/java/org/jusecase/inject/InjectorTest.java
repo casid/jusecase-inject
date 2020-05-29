@@ -1,5 +1,6 @@
 package org.jusecase.inject;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jusecase.inject.classes.*;
 
@@ -7,6 +8,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class InjectorTest implements ComponentTest {
+
+    @BeforeEach
+    void setUp() {
+        // We want to test the live behavior in this test
+        Injector.getInstance().setAllowMissingDependencies(false);
+    }
 
     @Test
     void named() {

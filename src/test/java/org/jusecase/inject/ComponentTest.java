@@ -11,6 +11,7 @@ public interface ComponentTest {
     @BeforeEach
     default void initInjector() {
         Injector.enableUnitTestMode();
+        Injector.getInstance().setAllowMissingDependencies(true);
         injectFieldsDeclaredInTestClassAndSuperClasses(getClass());
     }
 
