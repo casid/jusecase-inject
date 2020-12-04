@@ -9,6 +9,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 public class Injector {
     private static final Injector instance = new Injector();
@@ -153,6 +154,10 @@ public class Injector {
                 throw new InjectorException(createInjectErrorMessage("Failed to access field.", declaringType, field), e);
             }
         }
+    }
+
+    public Stream<Object> getImplementations() {
+        return implementations.values().stream().distinct();
     }
 
     private String createInjectErrorMessage(String reason, Class<?> type, Field field) {
