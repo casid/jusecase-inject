@@ -115,10 +115,10 @@ import javax.inject.Named;
 @Component
 public class HelloWorld {
     @Inject
-    @Named(value = "hello")
+    @Named("hello")
     private String hello;
     @Inject
-    @Named(value = "world")
+    @Named("world")
     private String world;
 
     public HelloWorld() {
