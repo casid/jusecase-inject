@@ -110,12 +110,15 @@ To see if everything works as expected, we can create a quick hello world class.
 ```java
 import org.jusecase.inject.Component;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 @Component
 public class HelloWorld {
     @Inject
+    @Named(value = "hello")
     private String hello;
     @Inject
+    @Named(value = "world")
     private String world;
 
     public HelloWorld() {
@@ -155,27 +158,6 @@ class HelloWorldTest implements ComponentTest {
 ```
 
 You should now see this output: `"Hello World"`
-
-This works, because the fields are named like the names of our dependencies. If you do not want to rely on field names you can use the `@Named` annotation:
-```java
-import org.jusecase.inject.Component;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-@Component
-public class HelloWorld {
-    @Inject
-    @Named(value = "hello")
-    private String _hello;
-    @Inject
-    @Named(value = "world")
-    private String _world;
-
-    public HelloWorld() {
-        System.out.println(_hello + " " + _world);
-    }
-}
-```
 
 ## Trainers aka Custom Mocks
 
