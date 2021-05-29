@@ -3,10 +3,7 @@ package org.jusecase.inject;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
@@ -18,7 +15,6 @@ public class Injector {
     private final Map<Class<?>, Object> implementations = new HashMap<>();
     private final Map<Class<?>, Map<String, Object>> implementationsByName = new HashMap<>();
     private final Map<Class<?>, List<Field>> injectableFields = new HashMap<>();
-    private boolean allowMissingDependencies;
 
     public static Injector getInstance() {
         if (unitTestMode) {
@@ -134,12 +130,9 @@ public class Injector {
     }
 
     public void inject(Object instance, Class<?> declaringType) {
-        for(Field field : getInjectableFields(declaringType)) {
+        for (Field field : getInjectableFields(declaringType)) {
             Object implementation = resolveImplementation(field, declaringType);
             if (implementation == null) {
-                if (allowMissingDependencies) {
-                    continue;
-                }
                 throw new InjectorException(createInjectErrorMessage("No implementation found.", declaringType, field));
             }
 
@@ -180,11 +173,44 @@ public class Injector {
         }
 
         Object implementation = resolveImplementation(field.getType(), toBeInjectedIn);
-        if (implementation != null) {
-            return implementation;
+        if (implementation == null && unitTestMode) {
+            implementation = resolveImplementationForUnitTest(field, toBeInjectedIn);
         }
 
-        return resolveImplementationByName(field, toBeInjectedIn, field.getName(), false);
+        return implementation;
+    }
+
+    private Object resolveImplementationForUnitTest(Field field, Class<?> toBeInjectedIn) {
+        if (field.getType().isInterface()) {
+            return resolveImplementationForInterfaceInUnitTest(field, toBeInjectedIn);
+        } else {
+            return resolveImplementationForClassInUnitTest(field, toBeInjectedIn);
+        }
+    }
+
+    private Object resolveImplementationForInterfaceInUnitTest(Field field, Class<?> toBeInjectedIn) {
+        try {
+            Class<?> trainerClass = getClass().getClassLoader().loadClass(field.getType().getName() + "Trainer");
+            try {
+                Object implementation = trainerClass.getConstructor().newInstance();
+                add(implementation);
+                return implementation;
+            } catch (Exception e) {
+                throw new InjectorException(createInjectErrorMessage("Failed to instantiate trainer " + trainerClass.getName(), toBeInjectedIn, field));
+            }
+        } catch (ClassNotFoundException e) {
+            throw new InjectorException(createInjectErrorMessage("No trainer found for interface " + field.getType().getName(), toBeInjectedIn, field));
+        }
+    }
+
+    private Object resolveImplementationForClassInUnitTest(Field field, Class<?> toBeInjectedIn) {
+        try {
+            Object implementation = field.getType().getConstructor().newInstance();
+            add(implementation);
+            return implementation;
+        } catch (Exception e) {
+            throw new InjectorException(createInjectErrorMessage("Failed to instantiate test dependency, you probably need to call givenDependency() manually.", toBeInjectedIn, field));
+        }
     }
 
     private Object resolveImplementationByName(Field field, Class<?> toBeInjectedIn, String name, boolean failIfMissing) {
@@ -241,10 +267,6 @@ public class Injector {
     public void reset() {
         implementations.clear();
         implementationsByName.clear();
-    }
-
-    public void setAllowMissingDependencies(boolean allowMissingDependencies) {
-        this.allowMissingDependencies = allowMissingDependencies;
     }
 
     public static void enableUnitTestMode() {

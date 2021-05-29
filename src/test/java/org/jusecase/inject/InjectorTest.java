@@ -1,6 +1,5 @@
 package org.jusecase.inject;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.jusecase.inject.classes.*;
 
@@ -8,12 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class InjectorTest implements ComponentTest {
-
-    @BeforeEach
-    void setUp() {
-        // We want to test the live behavior in this test
-        Injector.getInstance().setAllowMissingDependencies(false);
-    }
 
     @Test
     void named() {
@@ -120,11 +113,9 @@ public class InjectorTest implements ComponentTest {
     }
 
     @Test
-    void bean_noServiceToInject() {
-        Throwable throwable = catchThrowable(() -> new Formatter("foo", "bar"));
-        assertThat(throwable)
-                .isInstanceOf(InjectorException.class)
-                .hasMessage("No implementation found. Failed to inject org.jusecase.inject.classes.TestService service in org.jusecase.inject.classes.Formatter");
+    void autoGenerationOfClassesAndInterfaces() {
+        Formatter formatter = new Formatter("foo", "bar");
+        assertThat(formatter.getResult()).isEqualTo("service said: foobar");
     }
 
     @Test

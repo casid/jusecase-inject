@@ -17,7 +17,6 @@ class RegisterNewsletterTest implements ComponentTest {
 
     @BeforeEach
     void setUp() {
-        givenDependency(new EmailValidator());
         registerNewsletter = new RegisterNewsletter();
     }
 
