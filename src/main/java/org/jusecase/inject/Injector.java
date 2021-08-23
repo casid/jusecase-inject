@@ -15,6 +15,7 @@ public class Injector {
     private final Map<Class<?>, Object> implementations = new HashMap<>();
     private final Map<Class<?>, Map<String, Object>> implementationsByName = new HashMap<>();
     private final Map<Class<?>, List<Field>> injectableFields = new HashMap<>();
+    private boolean resolveUnitTestDependencies;
 
     public static Injector getInstance() {
         if (unitTestMode) {
@@ -173,7 +174,7 @@ public class Injector {
         }
 
         Object implementation = resolveImplementation(field.getType(), toBeInjectedIn);
-        if (implementation == null && unitTestMode) {
+        if (implementation == null && unitTestMode && resolveUnitTestDependencies) {
             implementation = resolveImplementationForUnitTest(field, toBeInjectedIn);
         }
 
@@ -270,7 +271,12 @@ public class Injector {
     }
 
     public static void enableUnitTestMode() {
+        enableUnitTestMode(true);
+    }
+
+    public static void enableUnitTestMode(boolean resolveUnitTestDependencies) {
         unitTestMode = true;
+        getInstance().resolveUnitTestDependencies = resolveUnitTestDependencies;
     }
 
     private static class UnitTestInstanceHolder {
