@@ -210,7 +210,7 @@ public class Injector {
             add(implementation);
             return implementation;
         } catch (Exception e) {
-            throw new InjectorException(createInjectErrorMessage("Failed to instantiate test dependency, you probably need to call givenDependency() manually.", toBeInjectedIn, field));
+            throw new InjectorException(createInjectErrorMessage("Failed to instantiate test dependency, you probably need to call givenDependency() manually.", toBeInjectedIn, field), e);
         }
     }
 
