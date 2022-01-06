@@ -42,6 +42,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <junit.jupiter.version>5.0.0</junit.jupiter.version>
         <junit.platform.version>1.0.0</junit.platform.version>
+        <aspectj.version>1.9.5</aspectj.version>
     </properties>
 
     <dependencies>
@@ -55,7 +56,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.9.4</version>
+            <version>${aspectj.version}</version>
         </dependency>
 
         <dependency>
@@ -109,7 +110,7 @@
             <plugin>
                 <groupId>com.nickwongdev</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.12.1</version>
+                <version>1.12.6</version>
                 <configuration>
                     <complianceLevel>11</complianceLevel>
                     <source>11</source>
@@ -133,7 +134,7 @@
                     <dependency>
                         <groupId>org.aspectj</groupId>
                         <artifactId>aspectjtools</artifactId>
-                        <version>1.9.4</version>
+                        <version>${aspectj.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
