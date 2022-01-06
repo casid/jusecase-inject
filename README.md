@@ -72,7 +72,7 @@ And AspectJ (for Java 11 we unfortunately can't use the official plugin):
 <plugin>
     <groupId>com.nickwongdev</groupId>
     <artifactId>aspectj-maven-plugin</artifactId>
-    <version>1.12.1</version>
+    <version>1.12.6</version>
     <configuration>
         <complianceLevel>${maven.compiler.release}</complianceLevel>
         <source>${maven.compiler.source}</source>
@@ -97,7 +97,7 @@ And AspectJ (for Java 11 we unfortunately can't use the official plugin):
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjtools</artifactId>
-            <version>1.9.4</version>
+            <version>1.9.5</version>
         </dependency>
     </dependencies>
 </plugin>
